@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#A0A0A0"/>
+  <text x="200" y="140" font-size="80" text-anchor="middle" dominant-baseline="middle">📦</text>
+  <text x="200" y="210" font-size="28" font-weight="bold" text-anchor="middle" fill="#fff" font-family="sans-serif">Package Lab</text>
+  <text x="200" y="248" font-size="18" text-anchor="middle" fill="#fff" opacity="0.7" font-family="sans-serif">by Jaesung</text>
+</svg>

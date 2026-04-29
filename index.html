@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Apple Developer Academy TechMap — Tech sessions run by mentors, visualized as an interlocking puzzle." />
+  <meta name="theme-color" content="#FFE600" />
+  <meta property="og:title" content="Apple Developer Academy TechMap" />
+  <meta property="og:description" content="Explore tech sessions run by mentors at the Apple Developer Academy." />
+  <meta property="og:type" content="website" />
+  <title>TechMap — Apple Developer Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ---- Reset & Base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+      background: #F5F0E8;
+      color: #000;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---- Header ---- */
+    #site-header {
+      background: #FFE600;
+      border-bottom: 3px solid #000;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 0 #000;
+    }
+    .header-brand { display: flex; align-items: center; gap: 14px; }
+    .header-logo {
+      width: 42px; height: 42px;
+      background: #000;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .header-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
+    .header-subtitle { font-size: 12px; font-weight: 500; opacity: 0.7; margin-top: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .session-count {
+      background: #000; color: #FFE600;
+      font-size: 13px; font-weight: 700;
+      padding: 6px 14px; border: 2px solid #000; letter-spacing: 0.5px;
+    }
+
+    /* ---- Main ---- */
+    #main-content { max-width: 900px; margin: 0 auto; padding: 40px 20px 60px; }
+
+    .section-intro { margin-bottom: 32px; }
+    .section-label {
+      display: inline-block; background: #000; color: #FFE600;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 4px 12px; margin-bottom: 12px;
+    }
+    .section-title { font-size: 32px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; margin-bottom: 10px; }
+    .section-desc { font-size: 15px; font-weight: 500; opacity: 0.6; max-width: 520px; line-height: 1.5; }
+
+    /* ---- Puzzle Container ---- */
+    #puzzle-container {
+      position: relative; width: 100%;
+      background: #F5F0E8;
+      border: 3px solid #000;
+      box-shadow: 6px 6px 0 #000;
+      overflow: visible;
+      padding: 20px;
+    }
+    #puzzle-svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+    /* ---- Piece Styles ---- */
+    .piece { cursor: pointer; transition: filter 0.15s ease; outline: none; }
+    .piece:focus { outline: none; }
+    .piece:hover,
+    .piece.touch-active { filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.8)) brightness(1.05); }
+    .piece.coming-soon { cursor: default; opacity: 0.85; }
+    .piece.legend-highlight { filter: drop-shadow(6px 6px 0px rgba(0,0,0,0.9)) brightness(1.12); }
+
+    @keyframes pieceIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .piece { animation: pieceIn 0.4s ease forwards; opacity: 0; }
+
+    /* ---- Tooltip ---- */
+    #tooltip {
+      position: fixed; z-index: 9999; pointer-events: none;
+      display: none; max-width: 280px; min-width: 180px;
+    }
+    #tooltip.visible { display: block; }
+    .tooltip-inner {
+      background: #fff;
+      border: 3px solid #000;
+      border-left: 6px solid var(--tooltip-accent, #FFE600);
+      box-shadow: 5px 5px 0 #000;
+      padding: 14px 16px;
+    }
+    .tooltip-title { font-size: 15px; font-weight: 800; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.3px; }
+    .tooltip-mentor { font-size: 12px; font-weight: 600; opacity: 0.6; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .tooltip-desc { font-size: 13px; font-weight: 500; line-height: 1.5; color: #333; margin-bottom: 8px; }
+    .tooltip-badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 3px 8px; border: 2px solid #000;
+      background: #EEE; color: #555;
+    }
+    .tooltip-badge.coming-soon { background: #FFE600; color: #000; }
+
+    /* ---- Legend ---- */
+    #legend {
+      margin-top: 36px; padding: 20px;
+      border: 3px solid #000; box-shadow: 4px 4px 0 #000; background: #fff;
+    }
+    .legend-header {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #000;
+    }
+    .legend-title {
+      font-size: 13px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; white-space: nowrap;
+    }
+    .legend-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 4px 10px; border: 2px solid #000;
+      background: #fff; cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+    }
+    .filter-btn:hover { background: #F5F0E8; }
+    .filter-btn.active { background: #000; color: #FFE600; }
+    .legend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+    .legend-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      padding: 6px 10px; border: 2px solid transparent;
+      transition: border-color 0.1s, background 0.1s, opacity 0.15s;
+    }
+    .legend-item:hover { border-color: #000; background: #F5F0E8; }
+    .legend-item.hidden { display: none; }
+    .legend-dot { width: 16px; height: 16px; border: 2px solid #000; border-radius: 3px; flex-shrink: 0; }
+    .legend-name { line-height: 1.2; font-size: 12px; }
+    .legend-mentor { font-size: 11px; font-weight: 500; opacity: 0.55; }
+    /* filter states */
+    .piece.dimmed {
+      opacity: 0.15;
+      filter: grayscale(1);
+      transition: opacity 0.25s, filter 0.25s;
+    }
+    .piece.filter-active {
+      filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.85)) brightness(1.08);
+      transition: filter 0.25s;
+    }
+
+    /* ---- Footer ---- */
+    #site-footer {
+      border-top: 3px solid #000; background: #000; color: #FFE600;
+      padding: 20px 24px; text-align: center;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 600px) {
+      #site-header { height: 60px; padding: 0 16px; }
+      .header-title { font-size: 16px; }
+      .header-subtitle { display: none; }
+      .session-count { font-size: 11px; padding: 5px 10px; }
+      #main-content { padding: 24px 12px 48px; }
+      .section-title { font-size: 24px; }
+      #puzzle-container { padding: 10px; }
+      #tooltip { max-width: 220px; min-width: 160px; }
+      .tooltip-inner { padding: 10px 12px; }
+      .tooltip-title { font-size: 13px; }
+      .legend-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    }
+    @media (max-width: 400px) {
+      .header-title { font-size: 14px; }
+      .section-title { font-size: 20px; }
+      .section-desc { font-size: 13px; }
+      #tooltip { max-width: 190px; }
+      .tooltip-title { font-size: 12px; }
+      .tooltip-desc { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header id="site-header" role="banner">
+    <div class="header-brand">
+      <div class="header-logo" aria-hidden="true">🗺️</div>
+      <div>
+        <div class="header-title">TechMap</div>
+        <div class="header-subtitle">Developer Academy @POSTECH</div>
+      </div>
+    </div>
+    <div class="session-count" id="session-count" aria-live="polite">13 Sessions</div>
+  </header>
+
+  <!-- MAIN -->
+  <main id="main-content" role="main">
+    <section class="section-intro">
+      <span class="section-label">2026</span>
+      <h1 class="section-title">Tech Sessions Map</h1>
+      <p class="section-desc">
+        Each puzzle piece is a tech session run by a mentor.
+        Hover or tap a piece to learn more. Click to open the session.
+      </p>
+    </section>
+
+    <section id="legend" aria-label="Session Legend">
+      <div class="legend-header">
+        <div class="legend-title">All Sessions</div>
+        <div class="legend-filters" id="legend-filters"></div>
+      </div>
+      <div class="legend-grid" id="legend-grid" role="list"></div>
+    </section>
+
+    <section aria-label="Puzzle Grid">
+      <div id="puzzle-container" role="region" aria-label="Tech Sessions Puzzle">
+        <!-- SVG injected by script -->
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="site-footer" role="contentinfo">
+    Developer Academy @POSTECH &copy; 2026 &mdash; TechMap
+  </footer>
+
+  <!-- TOOLTIP -->
+  <div id="tooltip" role="tooltip" aria-live="polite">
+    <div class="tooltip-inner">
+      <div class="tooltip-title"></div>
+      <div class="tooltip-mentor"></div>
+      <div class="tooltip-desc"></div>
+      <span class="tooltip-badge" style="display:none"></span>
+    </div>
+  </div>
+
+  <!-- 세션 데이터 (sessions.js 에서 수정) -->
+  <script src="sessions.js"></script>
+
+  <script>
+    'use strict';
+
+    /* ---- Grid & Piece Config ---- */
+    const COLS      = 4;
+    const PW        = 195;   // piece width
+    const PH        = 170;   // piece height
+    const TAB_SIZE  = 25;
+
+    /* ---- Pad sessions to fill the grid ---- */
+    const ROWS        = Math.ceil(SESSIONS.length / COLS);
+    const TOTAL_CELLS = ROWS * COLS;
+    const ALL_PIECES  = [...SESSIONS];
+    for (let i = SESSIONS.length; i < TOTAL_CELLS; i++) {
+      ALL_PIECES.push({
+        id: `future-${i}`,
+        title: 'Coming Soon',
+        mentor: '',
+        emoji: '＋',
+        color: '#EEEEEE',
+        textColor: '#999',
+        description: 'New session coming soon. Stay tuned!',
+        url: '#',
+        status: 'future',
+      });
+    }
+
+    /* ---- Edge Logic ---- */
+    const opposite = e => e === 'tab' ? 'blank' : 'tab';
+    const hEdge    = (r, c) => (r + c) % 2 === 0 ? 'tab' : 'blank';
+    const vEdge    = (r, c) => (r + c) % 2 === 0 ? 'tab' : 'blank';
+
+    function getEdges(r, c) {
+      return {
+        top:    r === 0        ? 'flat' : opposite(vEdge(r - 1, c)),
+        right:  c === COLS - 1 ? 'flat' : hEdge(r, c),
+        bottom: r === ROWS - 1 ? 'flat' : vEdge(r, c),
+        left:   c === 0        ? 'flat' : opposite(hEdge(r, c - 1)),
+      };
+    }
+
+    /* ---- SVG Path Generator ---- */
+    function piecePath(W, H, T, { top, right, bottom, left }) {
+      const tw = W * 0.2, th = H * 0.2, cx = W / 2, cy = H / 2;
+      const p = ['M 0 0'];
+
+      if (top === 'flat')    p.push(`L ${W} 0`);
+      else { const d = top === 'tab' ? -T : T;
+        p.push(`L ${cx-tw} 0 C ${cx-tw} ${d} ${cx+tw} ${d} ${cx+tw} 0 L ${W} 0`); }
+
+      if (right === 'flat')  p.push(`L ${W} ${H}`);
+      else { const d = right === 'tab' ? T : -T;
+        p.push(`L ${W} ${cy-th} C ${W+d} ${cy-th} ${W+d} ${cy+th} ${W} ${cy+th} L ${W} ${H}`); }
+
+      if (bottom === 'flat') p.push(`L 0 ${H}`);
+      else { const d = bottom === 'tab' ? T : -T;
+        p.push(`L ${cx+tw} ${H} C ${cx+tw} ${H+d} ${cx-tw} ${H+d} ${cx-tw} ${H} L 0 ${H}`); }
+
+      if (left === 'flat')   p.push(`L 0 0`);
+      else { const d = left === 'tab' ? -T : T;
+        p.push(`L 0 ${cy+th} C ${d} ${cy+th} ${d} ${cy-th} 0 ${cy-th} L 0 0`); }
+
+      p.push('Z');
+      return p.join(' ');
+    }
+
+    /* ---- Build SVG ---- */
+    function buildPuzzleSVG() {
+      const NS  = 'http://www.w3.org/2000/svg';
+      const PAD = TAB_SIZE + 4;
+      const VW  = COLS * PW;
+      const VH  = ROWS * PH;
+
+      const svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('id', 'puzzle-svg');
+      svg.setAttribute('viewBox', `${-PAD} ${-PAD} ${VW + PAD*2} ${VH + PAD*2}`);
+      svg.setAttribute('xmlns', NS);
+
+      const defs = document.createElementNS(NS, 'defs');
+
+      /* dot pattern */
+      const pat = document.createElementNS(NS, 'pattern');
+      pat.setAttribute('id', 'dots');
+      pat.setAttribute('patternUnits', 'userSpaceOnUse');
+      pat.setAttribute('width', '12'); pat.setAttribute('height', '12');
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx','6'); dot.setAttribute('cy','6');
+      dot.setAttribute('r','1.2'); dot.setAttribute('fill','rgba(0,0,0,0.12)');
+      pat.appendChild(dot);
+      defs.appendChild(pat);
+      svg.appendChild(defs);
+
+      function el(tag, attrs) {
+        const e = document.createElementNS(NS, tag);
+        for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+        return e;
+      }
+
+      ALL_PIECES.forEach((s, idx) => {
+        const r = Math.floor(idx / COLS), c = idx % COLS;
+        const pathD = piecePath(PW, PH, TAB_SIZE, getEdges(r, c));
+        const tx = c * PW, ty = r * PH;
+        const clipId = `clip-${idx}`;
+
+        /* clipPath */
+        const cp = document.createElementNS(NS, 'clipPath');
+        cp.setAttribute('id', clipId);
+        const cs = el('path', { d: pathD });
+        cp.appendChild(cs);
+        defs.appendChild(cp);
+
+        /* group */
+        const g = el('g', {
+          class: `piece ${s.status === 'future' ? 'future' : ''} ${s.status === 'coming-soon' ? 'coming-soon' : ''}`.trim(),
+          transform: `translate(${tx},${ty})`,
+          'data-id': s.id,
+          'data-idx': idx,
+          role: 'button',
+          tabindex: s.status === 'future' ? '-1' : '0',
+          'aria-label': `${s.title}${s.mentor ? ' by ' + s.mentor : ''}`,
+        });
+        g.style.animationDelay = `${idx * 60}ms`;
+        g.addEventListener('animationend', () => {
+          g.style.animation = 'none';
+          g.style.opacity   = '1';
+        }, { once: true });
+
+        /* bg fill */
+        g.appendChild(el('path', { d: pathD, fill: s.color, 'clip-path': `url(#${clipId})` }));
+
+        /* image (uncomment when real image is provided in sessions.js) */
+        if (s.image) {
+          const img = el('image', {
+            href: s.image,
+            x: '-5', y: '-5', width: PW + 10, height: PH + 10,
+            'clip-path': `url(#${clipId})`,
+            preserveAspectRatio: 'xMidYMid slice',
+            'pointer-events': 'none',
+          });
+          g.appendChild(img);
+        }
+
+        /* dot overlay */
+        g.appendChild(el('path', { d: pathD, fill: 'url(#dots)', 'clip-path': `url(#${clipId})`, 'pointer-events': 'none' }));
+
+        /* emoji */
+        const emojiEl = el('text', {
+          x: PW / 2, y: PH * 0.38,
+          'text-anchor': 'middle', 'dominant-baseline': 'middle',
+          'font-size': 32, 'clip-path': `url(#${clipId})`, 'pointer-events': 'none',
+        });
+        emojiEl.textContent = s.emoji;
+        g.appendChild(emojiEl);
+
+        /* title */
+        const tLen = s.title.length;
+        const tSize = tLen > 18 ? 9 : tLen > 14 ? 10 : tLen > 10 ? 11 : 13;
+        const titleEl = el('text', {
+          x: PW / 2, y: PH * 0.62,
+          'text-anchor': 'middle', 'dominant-baseline': 'middle',
+          'font-size': tSize, 'font-weight': '800',
+          'font-family': "'Space Grotesk', sans-serif",
+          fill: s.textColor, 'clip-path': `url(#${clipId})`, 'pointer-events': 'none',
+        });
+        if (tLen > 18) {
+          const words = s.title.split(' '), mid = Math.ceil(words.length / 2);
+          [[words.slice(0,mid), `-${tSize*0.6}px`], [words.slice(mid), `${tSize*1.3}px`]]
+            .forEach(([ws, dy]) => {
+              const ts = document.createElementNS(NS, 'tspan');
+              ts.setAttribute('x', PW / 2); ts.setAttribute('dy', dy);
+              ts.textContent = ws.join(' ');
+              titleEl.appendChild(ts);
+            });
+        } else {
+          titleEl.textContent = s.title;
+        }
+        g.appendChild(titleEl);
+
+        /* mentor */
+        if (s.mentor) {
+          const mentorEl = el('text', {
+            x: PW / 2, y: PH * 0.80,
+            'text-anchor': 'middle', 'dominant-baseline': 'middle',
+            'font-size': 10, 'font-weight': '600',
+            'font-family': "'Space Grotesk', sans-serif",
+            fill: s.textColor, opacity: '0.7',
+            'clip-path': `url(#${clipId})`, 'pointer-events': 'none',
+          });
+          mentorEl.textContent = `by ${s.mentor}`;
+          g.appendChild(mentorEl);
+        }
+
+        /* coming-soon badge */
+        if (s.status === 'coming-soon') {
+          const badge = el('text', {
+            x: PW / 2, y: PH * 0.91,
+            'text-anchor': 'middle', 'dominant-baseline': 'middle',
+            'font-size': 8, 'font-weight': '700',
+            'font-family': "'Space Grotesk', sans-serif",
+            fill: '#000', opacity: '0.7',
+            'clip-path': `url(#${clipId})`, 'pointer-events': 'none',
+          });
+          badge.textContent = 'COMING SOON';
+          g.appendChild(badge);
+        }
+
+        /* border (not clipped) */
+        g.appendChild(el('path', { d: pathD, fill: 'none', stroke: '#000', 'stroke-width': '3', 'pointer-events': 'none' }));
+
+        /* transparent hit area */
+        g.appendChild(el('path', { d: pathD, fill: 'transparent', stroke: 'none' }));
+
+        svg.appendChild(g);
+      });
+
+      return svg;
+    }
+
+    /* ---- Tooltip ---- */
+    const tooltip     = document.getElementById('tooltip');
+    let   tipTimeout  = null;
+
+    function showTooltip(s, x, y) {
+      clearTimeout(tipTimeout);
+      tooltip.querySelector('.tooltip-inner').style.borderLeftColor = s.color;
+      tooltip.querySelector('.tooltip-title').textContent  = s.title;
+      tooltip.querySelector('.tooltip-mentor').textContent = s.mentor ? `by ${s.mentor}` : '';
+
+      const desc = tooltip.querySelector('.tooltip-desc');
+      desc.textContent = s.description + (s.note ? ` — ${s.note}` : '');
+
+      const badge = tooltip.querySelector('.tooltip-badge');
+      if (s.status === 'coming-soon') {
+        badge.textContent = 'Coming Soon'; badge.className = 'tooltip-badge coming-soon';
+        badge.style.display = 'inline-block';
+      } else if (s.status === 'future') {
+        badge.textContent = 'Future Session'; badge.className = 'tooltip-badge';
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+      tooltip.classList.add('visible');
+      positionTooltip(x, y);
+    }
+
+    function hideTooltip() { tooltip.classList.remove('visible'); }
+
+    function positionTooltip(x, y) {
+      const TW = tooltip.offsetWidth, TH = tooltip.offsetHeight;
+      const OFF = 14;
+      let l = x + OFF, t = y + OFF;
+      if (l + TW > window.innerWidth  - 10) l = x - TW - OFF;
+      if (t + TH > window.innerHeight - 10) t = y - TH - OFF;
+      if (l < 8) l = 8; if (t < 8) t = 8;
+      tooltip.style.left = `${l}px`; tooltip.style.top = `${t}px`;
+    }
+
+    /* ---- Legend + Filter ---- */
+    function buildLegend() {
+      const grid    = document.getElementById('legend-grid');
+      const filters = document.getElementById('legend-filters');
+
+      /* unique mentors in appearance order */
+      const mentors = ['ALL', ...new Set(SESSIONS.map(s => s.mentor).filter(Boolean))];
+      let activeFilter = 'ALL';
+
+      function applyFilter(mentor) {
+        activeFilter = mentor;
+
+        /* filter buttons */
+        filters.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.mentor === mentor);
+        });
+
+        /* legend items */
+        grid.querySelectorAll('.legend-item').forEach(item => {
+          const match = mentor === 'ALL' || item.dataset.mentor === mentor;
+          item.classList.toggle('hidden', !match);
+        });
+
+        /* puzzle pieces: highlight matched, dim others */
+        document.querySelectorAll('.piece').forEach(piece => {
+          const s = ALL_PIECES.find(x => x.id === piece.dataset.id);
+          if (!s) return;
+          if (mentor === 'ALL') {
+            piece.classList.remove('dimmed', 'filter-active');
+          } else {
+            const match = s.mentor === mentor;
+            piece.classList.toggle('dimmed', !match);
+            piece.classList.toggle('filter-active', match);
+            if (match) piece.parentNode && piece.parentNode.appendChild(piece);
+          }
+        });
+      }
+
+      /* build filter buttons */
+      mentors.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (m === 'ALL' ? ' active' : '');
+        btn.textContent = m;
+        btn.dataset.mentor = m;
+        btn.addEventListener('click', () => applyFilter(m));
+        filters.appendChild(btn);
+      });
+
+      /* build legend items */
+      SESSIONS.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.setAttribute('data-id', s.id);
+        item.setAttribute('data-mentor', s.mentor || '');
+
+        const dot = document.createElement('div');
+        dot.className = 'legend-dot'; dot.style.background = s.color;
+
+        const info = document.createElement('div');
+        info.innerHTML = `<div class="legend-name">${s.title}</div>
+                          <div class="legend-mentor">${s.mentor ? 'by ' + s.mentor : ''}</div>`;
+
+        item.appendChild(dot); item.appendChild(info);
+        item.addEventListener('click', () => {
+          const piece = document.querySelector(`[data-id="${s.id}"]`);
+          if (piece) {
+            piece.classList.add('legend-highlight');
+            piece.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => piece.classList.remove('legend-highlight'), 1200);
+          }
+        });
+        grid.appendChild(item);
+      });
+    }
+
+    /* ---- Events ---- */
+    function bringToFront(g) { g.parentNode && g.parentNode.appendChild(g); }
+
+    function setupEvents(svg) {
+      const isMobile = () => window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+      let activePiece  = null;
+      let hoveredPiece = null;
+
+      svg.addEventListener('mousemove', e => {
+        if (isMobile()) return;
+        const g = e.target.closest('.piece');
+        if (g) {
+          const s = ALL_PIECES.find(x => x.id === g.dataset.id);
+          if (s) {
+            showTooltip(s, e.clientX, e.clientY);
+            if (g !== hoveredPiece) {
+              bringToFront(g);
+              hoveredPiece = g;
+            }
+          }
+        } else {
+          hideTooltip();
+          hoveredPiece = null;
+        }
+      });
+
+      svg.addEventListener('mouseleave', () => {
+        if (!isMobile()) { hideTooltip(); hoveredPiece = null; }
+      });
+
+      svg.addEventListener('click', e => {
+        const g = e.target.closest('.piece');
+        if (!g) return;
+        const s = ALL_PIECES.find(x => x.id === g.dataset.id);
+        if (s && s.url && s.url !== '#' && s.status !== 'future')
+          window.open(s.url, '_blank', 'noopener,noreferrer');
+      });
+
+      svg.addEventListener('keydown', e => {
+        const g = e.target.closest('.piece');
+        if (!g || !['Enter', ' '].includes(e.key)) return;
+        e.preventDefault();
+        const s = ALL_PIECES.find(x => x.id === g.dataset.id);
+        if (s && s.url && s.url !== '#' && s.status !== 'future')
+          window.open(s.url, '_blank', 'noopener,noreferrer');
+      });
+
+      svg.addEventListener('touchstart', e => {
+        const g = e.target.closest('.piece');
+        if (!g) { activePiece && activePiece.classList.remove('touch-active'); activePiece = null; hideTooltip(); return; }
+        e.preventDefault();
+        const touch = e.touches[0];
+        const s = ALL_PIECES.find(x => x.id === g.dataset.id);
+
+        if (activePiece && activePiece !== g) activePiece.classList.remove('touch-active');
+
+        if (activePiece === g) {
+          if (s && s.url && s.url !== '#' && s.status !== 'future')
+            window.open(s.url, '_blank', 'noopener,noreferrer');
+          activePiece = null; g.classList.remove('touch-active');
+          hideTooltip(); clearTimeout(tipTimeout); return;
+        }
+
+        activePiece = g; g.classList.add('touch-active'); bringToFront(g);
+        if (s) {
+          showTooltip(s, touch.clientX, touch.clientY);
+          clearTimeout(tipTimeout);
+          tipTimeout = setTimeout(() => {
+            hideTooltip(); g.classList.remove('touch-active'); activePiece = null;
+          }, 3000);
+        }
+      }, { passive: false });
+
+      svg.addEventListener('touchmove', e => {
+        if (e.target.closest('.piece')) e.preventDefault();
+      }, { passive: false });
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#puzzle-container') && !e.target.closest('#tooltip')) hideTooltip();
+    });
+
+    /* ---- Init ---- */
+    document.addEventListener('DOMContentLoaded', () => {
+      const countEl = document.getElementById('session-count');
+      if (countEl) countEl.textContent = `${SESSIONS.length} Sessions`;
+
+      const container = document.getElementById('puzzle-container');
+      const svg = buildPuzzleSVG();
+      container.appendChild(svg);
+      setupEvents(svg);
+      buildLegend();
+    });
+  </script>
+</body>
+</html>

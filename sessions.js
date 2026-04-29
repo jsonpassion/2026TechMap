@@ -1,0 +1,181 @@
+/* ============================================================
+   sessions.js — 수정 가능한 세션 데이터
+   이미지, 타이틀, 설명, URL 등을 여기서 관리하세요.
+   ============================================================
+
+   각 세션 항목 필드:
+   - id        : 고유 ID (폴더명, URL 슬러그로 사용)
+   - title     : 세션 제목
+   - mentor    : 멘토 이름
+   - emoji     : 퍼즐 조각에 표시할 이모지
+   - color     : 조각 배경색 (hex)
+   - textColor : 조각 텍스트 색 ('#000' 또는 '#fff')
+   - description : 툴팁에 표시할 설명
+   - note      : (선택) 추가 메모 — 툴팁 설명 뒤에 붙음
+   - url       : 세션 링크 (준비 전엔 '#' 유지)
+   - status    : 'active' | 'coming-soon' | 'future'
+   - image     : (선택) 이미지 경로 — 나중에 추가 가능
+                  예: 'assets/images/sessions/debugging/cover.png'
+   ============================================================ */
+
+const SESSIONS = [
+  {
+    id: 'debugging',
+    title: 'Debugging',
+    mentor: 'Howard',
+    emoji: '🐛',
+    color: '#FFE600',
+    textColor: '#000',
+    description: 'Master the art of debugging iOS apps. Learn breakpoints, LLDB, and Xcode\'s powerful diagnostic tools.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/debugging/cover.png',
+  },
+  {
+    id: 'healthcare',
+    title: 'HealthCare',
+    mentor: 'Lingo',
+    emoji: '🏥',
+    color: '#FF4D6A',
+    textColor: '#fff',
+    description: 'Build health-focused apps using HealthKit, CareKit, and Apple\'s health data APIs.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/healthcare/cover.png',
+  },
+  {
+    id: 'testing-lab',
+    title: 'Testing Lab',
+    mentor: 'Jaesung',
+    emoji: '🧪',
+    color: '#00D26A',
+    textColor: '#000',
+    description: 'Unit testing, UI testing, and test-driven development practices for Swift and SwiftUI apps.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/testing-lab/cover.png',
+  },
+  {
+    id: 'concurrency-lab',
+    title: 'Concurrency Lab',
+    mentor: 'Jaesung',
+    emoji: '⚡',
+    color: '#0047FF',
+    textColor: '#fff',
+    description: 'Swift Concurrency deep dive: async/await, actors, structured concurrency, and performance.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/concurrency-lab/cover.png',
+  },
+  {
+    id: 'package-lab',
+    title: 'Package Lab',
+    mentor: 'Jaesung',
+    emoji: '📦',
+    color: '#A0A0A0',
+    textColor: '#fff',
+    description: 'Swift Package Manager: creating, publishing, and managing packages for your projects.',
+    note: '오픈 준비중',
+    url: '#',
+    status: 'coming-soon',
+    // image: 'assets/images/sessions/package-lab/cover.png',
+  },
+  {
+    id: 'spatial-computing',
+    title: 'Spatial Computing',
+    mentor: 'Judy',
+    emoji: '🥽',
+    color: '#7B2FFF',
+    textColor: '#fff',
+    description: 'Dive into visionOS and spatial experiences. Build immersive apps for Apple Vision Pro.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/spatial-computing/cover.png',
+  },
+  {
+    id: 'ai-app',
+    title: 'AI와 함께 앱 만들기',
+    mentor: 'Isaac',
+    emoji: '🤖',
+    color: '#FF7A00',
+    textColor: '#fff',
+    description: 'Build intelligent apps using on-device AI, CoreML, and modern AI APIs.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/ai-app/cover.png',
+  },
+  {
+    id: 'local-database',
+    title: 'Local Database',
+    mentor: 'Jason',
+    emoji: '🗄️',
+    color: '#00BCD4',
+    textColor: '#000',
+    description: 'Persistent storage with SwiftData, Core Data, and SQLite. Data modeling best practices.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/local-database/cover.png',
+  },
+  {
+    id: 'createml',
+    title: 'CreateML',
+    mentor: 'Jason',
+    emoji: '🧠',
+    color: '#FF3D71',
+    textColor: '#fff',
+    description: 'Train custom ML models with Create ML. 12 templates across 4 months of hands-on learning.',
+    note: '12 templates · 4 months',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/createml/cover.png',
+  },
+  {
+    id: 'aiml',
+    title: 'AIML심화',
+    mentor: 'Jason',
+    emoji: '⚙️',
+    color: '#FFB800',
+    textColor: '#000',
+    description: 'Advanced ML: Metal performance, Model Conversion & Quantization, Foundation Model.',
+    note: 'Metal · Quantization · Foundation Model',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/aiml/cover.png',
+  },
+  {
+    id: 'networking',
+    title: 'Networking',
+    mentor: 'Nathan',
+    emoji: '🌐',
+    color: '#1565C0',
+    textColor: '#fff',
+    description: 'URLSession, async networking, REST APIs, WebSockets, and network diagnostics.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/networking/cover.png',
+  },
+  {
+    id: 'animation-swiftui',
+    title: 'Animation with SwiftUI',
+    mentor: 'Leeo',
+    emoji: '✨',
+    color: '#E91E8C',
+    textColor: '#fff',
+    description: 'Fluid animations, transitions, and motion design using SwiftUI\'s animation system.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/animation-swiftui/cover.png',
+  },
+  {
+    id: 'computational-thinking',
+    title: 'Computational Thinking',
+    mentor: 'Leeo',
+    emoji: '🧩',
+    color: '#76FF03',
+    textColor: '#000',
+    description: 'Problem decomposition, algorithms, and logical thinking to build better software.',
+    url: '#',
+    status: 'active',
+    // image: 'assets/images/sessions/computational-thinking/cover.png',
+  },
+];

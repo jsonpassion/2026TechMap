@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#FF7A00"/>
+  <text x="200" y="130" font-size="80" text-anchor="middle" dominant-baseline="middle">🤖</text>
+  <text x="200" y="205" font-size="20" font-weight="bold" text-anchor="middle" fill="#fff" font-family="sans-serif">AI와 함께 앱 만들기</text>
+  <text x="200" y="248" font-size="18" text-anchor="middle" fill="#fff" opacity="0.7" font-family="sans-serif">by Isaac</text>
+</svg>
