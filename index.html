@@ -152,7 +152,7 @@
     .legend-dot { width: 16px; height: 16px; border: 2px solid #000; border-radius: 3px; flex-shrink: 0; }
     .legend-name { line-height: 1.2; font-size: 12px; }
     .legend-mentor { font-size: 11px; font-weight: 500; opacity: 0.55; }
-    /* filter states */
+    /* mentor filter states */
     .piece.dimmed {
       opacity: 0.15;
       filter: grayscale(1);
@@ -162,6 +162,19 @@
       filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.85)) brightness(1.08);
       transition: filter 0.25s;
     }
+    /* legend hover spotlight states */
+    .piece.legend-dimmed {
+      filter: brightness(0.08) saturate(0);
+      transition: filter 0.2s;
+    }
+    .piece.legend-spotlight {
+      filter: drop-shadow(6px 6px 0px rgba(0,0,0,0.9)) brightness(1.1);
+      transition: filter 0.2s;
+    }
+    /* highlight legend item on hover */
+    .legend-item:hover .legend-dot,
+    .legend-item.touch-lit .legend-dot { outline: 2px solid #000; outline-offset: 2px; }
+    .legend-item.touch-lit { border-color: #000; background: #F5F0E8; }
 
     /* ---- Footer ---- */
     #site-footer {
@@ -509,6 +522,25 @@
       tooltip.style.left = `${l}px`; tooltip.style.top = `${t}px`;
     }
 
+    /* ---- Spotlight helpers ---- */
+    let litLegendItem = null;
+
+    function spotlightPiece(sessionId) {
+      document.querySelectorAll('.piece').forEach(piece => {
+        const match = piece.dataset.id === sessionId;
+        piece.classList.toggle('legend-spotlight', match);
+        piece.classList.toggle('legend-dimmed', !match);
+        if (match) piece.parentNode && piece.parentNode.appendChild(piece);
+      });
+    }
+
+    function clearSpotlight() {
+      document.querySelectorAll('.piece').forEach(piece => {
+        piece.classList.remove('legend-spotlight', 'legend-dimmed');
+      });
+      if (litLegendItem) { litLegendItem.classList.remove('touch-lit'); litLegendItem = null; }
+    }
+
     /* ---- Legend + Filter ---- */
     function buildLegend() {
       const grid    = document.getElementById('legend-grid');
@@ -516,23 +548,14 @@
 
       /* unique mentors in appearance order */
       const mentors = ['ALL', ...new Set(SESSIONS.map(s => s.mentor).filter(Boolean))];
-      let activeFilter = 'ALL';
 
       function applyFilter(mentor) {
-        activeFilter = mentor;
-
-        /* filter buttons */
         filters.querySelectorAll('.filter-btn').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.mentor === mentor);
         });
-
-        /* legend items */
         grid.querySelectorAll('.legend-item').forEach(item => {
-          const match = mentor === 'ALL' || item.dataset.mentor === mentor;
-          item.classList.toggle('hidden', !match);
+          item.classList.toggle('hidden', mentor !== 'ALL' && item.dataset.mentor !== mentor);
         });
-
-        /* puzzle pieces: highlight matched, dim others */
         document.querySelectorAll('.piece').forEach(piece => {
           const s = ALL_PIECES.find(x => x.id === piece.dataset.id);
           if (!s) return;
@@ -547,17 +570,17 @@
         });
       }
 
-      /* build filter buttons */
+      /* filter buttons */
       mentors.forEach(m => {
         const btn = document.createElement('button');
         btn.className = 'filter-btn' + (m === 'ALL' ? ' active' : '');
         btn.textContent = m;
         btn.dataset.mentor = m;
-        btn.addEventListener('click', () => applyFilter(m));
+        btn.addEventListener('click', () => { clearSpotlight(); applyFilter(m); });
         filters.appendChild(btn);
       });
 
-      /* build legend items */
+      /* legend items */
       SESSIONS.forEach(s => {
         const item = document.createElement('div');
         item.className = 'legend-item';
@@ -572,17 +595,41 @@
                           <div class="legend-mentor">${s.mentor ? 'by ' + s.mentor : ''}</div>`;
 
         item.appendChild(dot); item.appendChild(info);
-        item.addEventListener('click', () => {
-          const piece = document.querySelector(`[data-id="${s.id}"]`);
-          if (piece) {
-            piece.classList.add('legend-highlight');
-            piece.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => piece.classList.remove('legend-highlight'), 1200);
+
+        /* desktop: hover → spotlight */
+        item.addEventListener('mouseenter', () => spotlightPiece(s.id));
+        item.addEventListener('mouseleave', () => clearSpotlight());
+
+        /* mobile: tap → spotlight (tap elsewhere → reset via document handler) */
+        item.addEventListener('touchstart', e => {
+          e.stopPropagation();
+          if (litLegendItem && litLegendItem !== item) {
+            litLegendItem.classList.remove('touch-lit');
           }
-        });
+          if (litLegendItem === item) {
+            clearSpotlight();
+          } else {
+            litLegendItem = item;
+            item.classList.add('touch-lit');
+            spotlightPiece(s.id);
+          }
+        }, { passive: true });
+
         grid.appendChild(item);
       });
     }
+
+    /* tap anywhere outside legend/puzzle → reset spotlight & filter to ALL */
+    document.addEventListener('touchstart', e => {
+      if (!e.target.closest('#legend') && !e.target.closest('#puzzle-container')) {
+        clearSpotlight();
+      }
+    }, { passive: true });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#legend') && !e.target.closest('#puzzle-container')) {
+        clearSpotlight();
+      }
+    });
 
     /* ---- Events ---- */
     function bringToFront(g) { g.parentNode && g.parentNode.appendChild(g); }
