@@ -498,19 +498,6 @@
           g.appendChild(mentorEl);
         }
 
-        /* coming-soon badge */
-        if (s.status === 'coming-soon') {
-          const badge = el('text', {
-            x: PW / 2, y: PH * 0.91,
-            'text-anchor': 'middle', 'dominant-baseline': 'middle',
-            'font-size': 8, 'font-weight': '700',
-            'font-family': "'Space Grotesk', sans-serif",
-            fill: '#000', opacity: '0.7',
-            'clip-path': `url(#${clipId})`, 'pointer-events': 'none',
-          });
-          badge.textContent = 'COMING SOON';
-          g.appendChild(badge);
-        }
 
         /* border (not clipped) */
         g.appendChild(el('path', { d: pathD, fill: 'none', stroke: '#000', 'stroke-width': '3', 'pointer-events': 'none' }));
