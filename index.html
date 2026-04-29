@@ -198,8 +198,11 @@
     }
 
     /* ---- Responsive ---- */
+    .title-mobile-short { display: none; }
     @media (max-width: 600px) {
       #site-header { display: none; }
+      .title-mobile-short  { display: inline; }
+      .title-desktop-full  { display: none; }
       #main-content { padding: 24px 12px 48px; }
       .section-title { font-size: 24px; }
       #puzzle-container { padding: 10px; }
@@ -255,7 +258,7 @@
   <main id="main-content" role="main">
     <section class="section-intro">
       <span class="section-label">2026</span>
-      <h1 class="section-title">Tech Sessions Map</h1>
+      <h1 class="section-title">Tech <span class="title-mobile-short">Map</span><span class="title-desktop-full">Sessions Map</span></h1>
       <p class="section-desc">
         Each puzzle piece is a tech session run by a mentor.<br>
         Hover or tap a piece to learn more. Click to open the session.
