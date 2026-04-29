@@ -125,11 +125,14 @@
       display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
       margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #000;
     }
+    .legend-title-group {
+      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
     /* chevron — desktop hidden, mobile shown */
     .legend-chevron {
-      display: none; margin-left: auto; flex-shrink: 0;
+      display: none; flex-shrink: 0;
       background: none; border: 2px solid #000;
-      padding: 5px 8px; cursor: pointer; line-height: 0;
+      padding: 4px 7px; cursor: pointer; line-height: 0;
       transition: transform 0.25s ease;
     }
     .legend-chevron.open { transform: rotate(180deg); }
@@ -196,10 +199,7 @@
 
     /* ---- Responsive ---- */
     @media (max-width: 600px) {
-      #site-header { height: 60px; padding: 0 16px; }
-      .header-title { font-size: 16px; }
-      .header-subtitle { display: none; }
-      .session-count { font-size: 11px; padding: 5px 10px; }
+      #site-header { display: none; }
       #main-content { padding: 24px 12px 48px; }
       .section-title { font-size: 24px; }
       #puzzle-container { padding: 10px; }
@@ -264,13 +264,15 @@
 
     <section id="legend" aria-label="Session Legend">
       <div class="legend-header">
-        <div class="legend-title">All Sessions</div>
+        <div class="legend-title-group">
+          <div class="legend-title">All Sessions</div>
+          <button class="legend-chevron" id="legend-chevron" aria-label="세션 목록 접기/펼치기" aria-expanded="false">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
         <div class="legend-filters" id="legend-filters"></div>
-        <button class="legend-chevron" id="legend-chevron" aria-label="세션 목록 접기/펼치기" aria-expanded="false">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
       </div>
       <div class="legend-body" id="legend-body">
         <div class="legend-grid" id="legend-grid" role="list"></div>
@@ -574,6 +576,7 @@
         const match = piece.dataset.id === sessionId;
         piece.classList.toggle('legend-spotlight', match);
         piece.classList.toggle('legend-dimmed', !match);
+        piece.style.opacity = match ? '1' : '0.15';
         if (match) piece.parentNode && piece.parentNode.appendChild(piece);
       });
     }
@@ -581,6 +584,7 @@
     function clearSpotlight() {
       document.querySelectorAll('.piece').forEach(piece => {
         piece.classList.remove('legend-spotlight', 'legend-dimmed');
+        piece.style.opacity = '1';
       });
       if (litLegendItem) { litLegendItem.classList.remove('touch-lit'); litLegendItem = null; }
     }
@@ -605,10 +609,12 @@
           if (!s) return;
           if (mentor === 'ALL') {
             piece.classList.remove('dimmed', 'filter-active');
+            piece.style.opacity = '1';
           } else {
             const match = s.mentor === mentor;
             piece.classList.toggle('dimmed', !match);
             piece.classList.toggle('filter-active', match);
+            piece.style.opacity = match ? '1' : '0.15';
             if (match) piece.parentNode && piece.parentNode.appendChild(piece);
           }
         });
