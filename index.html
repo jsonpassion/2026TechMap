@@ -162,14 +162,15 @@
       filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.85)) brightness(1.08);
       transition: filter 0.25s;
     }
-    /* legend hover spotlight states */
+    /* legend hover spotlight states — same visual as mentor filter */
     .piece.legend-dimmed {
-      filter: brightness(0.08) saturate(0);
-      transition: filter 0.2s;
+      opacity: 0.15;
+      filter: grayscale(1);
+      transition: opacity 0.25s, filter 0.25s;
     }
     .piece.legend-spotlight {
-      filter: drop-shadow(6px 6px 0px rgba(0,0,0,0.9)) brightness(1.1);
-      transition: filter 0.2s;
+      filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.85)) brightness(1.08);
+      transition: filter 0.25s;
     }
     /* highlight legend item on hover */
     .legend-item:hover .legend-dot,
