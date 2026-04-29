@@ -216,7 +216,7 @@
       <div class="header-logo" aria-hidden="true">🗺️</div>
       <div>
         <div class="header-title">TechMap</div>
-        <div class="header-subtitle">Developer Academy @POSTECH</div>
+        <div class="header-subtitle">Apple Developer Academy @POSTECH</div>
       </div>
     </div>
     <div class="session-count" id="session-count" aria-live="polite">13 Sessions</div>
@@ -228,7 +228,7 @@
       <span class="section-label">2026</span>
       <h1 class="section-title">Tech Sessions Map</h1>
       <p class="section-desc">
-        Each puzzle piece is a tech session run by a mentor.
+        Each puzzle piece is a tech session run by a mentor.<br>
         Hover or tap a piece to learn more. Click to open the session.
       </p>
     </section>
@@ -250,7 +250,7 @@
 
   <!-- FOOTER -->
   <footer id="site-footer" role="contentinfo">
-    Developer Academy @POSTECH &copy; 2026 &mdash; TechMap
+    Apple Developer Academy @POSTECH &copy; 2026 &mdash; TechMap
   </footer>
 
   <!-- TOOLTIP -->
@@ -572,13 +572,19 @@
       }
 
       /* filter buttons */
-      mentors.forEach(m => {
+      mentors.forEach((m, i) => {
         const btn = document.createElement('button');
         btn.className = 'filter-btn' + (m === 'ALL' ? ' active' : '');
         btn.textContent = m;
         btn.dataset.mentor = m;
         btn.addEventListener('click', () => { clearSpotlight(); applyFilter(m); });
         filters.appendChild(btn);
+        if (i === 0) {
+          const sep = document.createElement('span');
+          sep.textContent = '|';
+          sep.style.cssText = 'font-weight:700; opacity:0.3; align-self:center;';
+          filters.appendChild(sep);
+        }
       });
 
       /* legend items */
@@ -601,31 +607,24 @@
         item.addEventListener('mouseenter', () => spotlightPiece(s.id));
         item.addEventListener('mouseleave', () => clearSpotlight());
 
-        /* mobile: tap → spotlight (tap elsewhere → reset via document handler) */
-        item.addEventListener('touchstart', e => {
+        /* mobile & desktop click → toggle spotlight */
+        item.addEventListener('click', e => {
           e.stopPropagation();
-          if (litLegendItem && litLegendItem !== item) {
-            litLegendItem.classList.remove('touch-lit');
-          }
           if (litLegendItem === item) {
             clearSpotlight();
           } else {
+            if (litLegendItem) litLegendItem.classList.remove('touch-lit');
             litLegendItem = item;
             item.classList.add('touch-lit');
             spotlightPiece(s.id);
           }
-        }, { passive: true });
+        });
 
         grid.appendChild(item);
       });
     }
 
-    /* tap anywhere outside legend/puzzle → reset spotlight & filter to ALL */
-    document.addEventListener('touchstart', e => {
-      if (!e.target.closest('#legend') && !e.target.closest('#puzzle-container')) {
-        clearSpotlight();
-      }
-    }, { passive: true });
+    /* click anywhere outside legend/puzzle → reset spotlight */
     document.addEventListener('click', e => {
       if (!e.target.closest('#legend') && !e.target.closest('#puzzle-container')) {
         clearSpotlight();
