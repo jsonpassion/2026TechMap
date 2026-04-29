@@ -76,6 +76,7 @@ const SESSIONS = [
     textColor: '#fff',
     description: 'Swift Package Manager를 활용한 패키지 생성, 배포, 관리 전략을 배웁니다.',
     note: '오픈 준비중',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🚧 준비중'],
     url: '#',
     status: 'coming-soon',
     // image: 'assets/images/sessions/package-lab/cover.png',
