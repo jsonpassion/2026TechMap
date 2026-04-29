@@ -125,6 +125,16 @@
       display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
       margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #000;
     }
+    /* chevron — desktop hidden, mobile shown */
+    .legend-chevron {
+      display: none; margin-left: auto; flex-shrink: 0;
+      background: none; border: 2px solid #000;
+      padding: 5px 8px; cursor: pointer; line-height: 0;
+      transition: transform 0.25s ease;
+    }
+    .legend-chevron.open { transform: rotate(180deg); }
+    /* collapsible body */
+    .legend-body { overflow: hidden; }
     .legend-title {
       font-size: 13px; font-weight: 700; text-transform: uppercase;
       letter-spacing: 1.5px; white-space: nowrap;
@@ -197,6 +207,25 @@
       .tooltip-inner { padding: 10px 12px; }
       .tooltip-title { font-size: 13px; }
       .legend-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+      /* mobile: show chevron, collapse body by default */
+      .legend-chevron { display: flex; align-items: center; }
+      .legend-header { margin-bottom: 0; }
+      .legend-header.collapsed { border-bottom-color: transparent; }
+      .legend-body {
+        max-height: 0;
+        transition: max-height 0.35s ease, margin-top 0.35s ease;
+        margin-top: 0;
+      }
+      .legend-body.open {
+        max-height: 1000px;
+        margin-top: 16px;
+      }
+      /* tap-hint in tooltip */
+      .tooltip-tap-hint {
+        font-size: 11px; font-weight: 700; color: #000;
+        border-top: 1px solid #eee; margin-top: 8px; padding-top: 6px;
+        letter-spacing: 0.3px;
+      }
     }
     @media (max-width: 400px) {
       .header-title { font-size: 14px; }
@@ -237,8 +266,15 @@
       <div class="legend-header">
         <div class="legend-title">All Sessions</div>
         <div class="legend-filters" id="legend-filters"></div>
+        <button class="legend-chevron" id="legend-chevron" aria-label="세션 목록 접기/펼치기" aria-expanded="false">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
-      <div class="legend-grid" id="legend-grid" role="list"></div>
+      <div class="legend-body" id="legend-body">
+        <div class="legend-grid" id="legend-grid" role="list"></div>
+      </div>
     </section>
 
     <section aria-label="Puzzle Grid">
@@ -260,6 +296,7 @@
       <div class="tooltip-mentor"></div>
       <div class="tooltip-desc"></div>
       <span class="tooltip-badge" style="display:none"></span>
+      <div class="tooltip-tap-hint" style="display:none">한 번 더 탭하면 세션으로 이동 →</div>
     </div>
   </div>
 
@@ -507,6 +544,12 @@
       } else {
         badge.style.display = 'none';
       }
+      const tapHint = tooltip.querySelector('.tooltip-tap-hint');
+      if (tapHint) {
+        const hasLink = s.url && s.url !== '#' && s.status !== 'future';
+        tapHint.style.display = (isMobile() && hasLink) ? 'block' : 'none';
+      }
+
       tooltip.classList.add('visible');
       positionTooltip(x, y);
     }
@@ -632,10 +675,10 @@
     });
 
     /* ---- Events ---- */
+    const isMobile = () => window.matchMedia('(hover:none) and (pointer:coarse)').matches;
     function bringToFront(g) { g.parentNode && g.parentNode.appendChild(g); }
 
     function setupEvents(svg) {
-      const isMobile = () => window.matchMedia('(hover:none) and (pointer:coarse)').matches;
       let activePiece  = null;
       let hoveredPiece = null;
 
@@ -662,6 +705,7 @@
       });
 
       svg.addEventListener('click', e => {
+        if (isMobile()) return; // mobile: navigation handled by second tap in touchstart
         const g = e.target.closest('.piece');
         if (!g) return;
         const s = ALL_PIECES.find(x => x.id === g.dataset.id);
@@ -713,6 +757,23 @@
       if (!e.target.closest('#puzzle-container') && !e.target.closest('#tooltip')) hideTooltip();
     });
 
+    /* ---- Legend chevron (mobile collapse) ---- */
+    function setupChevron() {
+      const chevron = document.getElementById('legend-chevron');
+      const body    = document.getElementById('legend-body');
+      const header  = chevron && chevron.closest('.legend-header');
+      if (!chevron || !body) return;
+
+      function toggle() {
+        const open = body.classList.toggle('open');
+        chevron.classList.toggle('open', open);
+        chevron.setAttribute('aria-expanded', open);
+        if (header) header.classList.toggle('collapsed', !open);
+      }
+
+      chevron.addEventListener('click', toggle);
+    }
+
     /* ---- Init ---- */
     document.addEventListener('DOMContentLoaded', () => {
       const countEl = document.getElementById('session-count');
@@ -723,6 +784,7 @@
       container.appendChild(svg);
       setupEvents(svg);
       buildLegend();
+      setupChevron();
     });
   </script>
 </body>
