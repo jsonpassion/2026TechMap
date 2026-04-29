@@ -12,6 +12,7 @@
    - textColor : 조각 텍스트 색 ('#000' 또는 '#fff')
    - description : 툴팁에 표시할 설명
    - note      : (선택) 추가 메모 — 툴팁 설명 뒤에 붙음
+   - ticker    : (선택) 하단 티커 항목 배열 — 날짜, 기간 등 추가 정보
    - url       : 세션 링크 (준비 전엔 '#' 유지)
    - status    : 'active' | 'coming-soon' | 'future'
    - image     : (선택) 이미지 경로 — 나중에 추가 가능
@@ -27,6 +28,7 @@ const SESSIONS = [
     color: '#FFE600',
     textColor: '#000',
     description: 'iOS 앱 디버깅의 핵심을 파고듭니다. 중단점 활용, LLDB, Xcode 진단 도구를 체계적으로 학습합니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🔧 Breakpoints · LLDB · Instruments'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/debugging/cover.png',
@@ -39,6 +41,7 @@ const SESSIONS = [
     color: '#FF4D6A',
     textColor: '#fff',
     description: 'HealthKit, CareKit 등 Apple 헬스 데이터 API를 활용해 건강 중심의 앱을 만들어봅니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '❤️ HealthKit · CareKit · ResearchKit'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/healthcare/cover.png',
@@ -51,6 +54,7 @@ const SESSIONS = [
     color: '#00D26A',
     textColor: '#000',
     description: 'Swift 및 SwiftUI 앱을 위한 유닛 테스트, UI 테스트, 테스트 주도 개발(TDD) 방법론을 실습합니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🧪 XCTest · TDD · UI Testing'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/testing-lab/cover.png',
@@ -63,6 +67,7 @@ const SESSIONS = [
     color: '#0047FF',
     textColor: '#fff',
     description: 'Swift Concurrency 심화 탐구: async/await, Actor, 구조화된 동시성과 성능 최적화를 다룹니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '⚡ async/await · Actor · Task'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/concurrency-lab/cover.png',
@@ -89,6 +94,7 @@ const SESSIONS = [
     color: '#7B2FFF',
     textColor: '#fff',
     description: 'visionOS와 공간 경험의 세계로 뛰어듭니다. Apple Vision Pro를 위한 몰입형 앱을 직접 만들어봅니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🥽 visionOS · RealityKit · ARKit'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/spatial-computing/cover.png',
@@ -101,6 +107,7 @@ const SESSIONS = [
     color: '#FF7A00',
     textColor: '#fff',
     description: '온디바이스 AI, CoreML, 최신 AI API를 활용해 지능형 앱을 설계하고 구현합니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🤖 CoreML · On-device AI · API'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/ai-app/cover.png',
@@ -113,6 +120,7 @@ const SESSIONS = [
     color: '#00BCD4',
     textColor: '#000',
     description: 'SwiftData, Core Data, SQLite를 활용한 로컬 영구 저장소 구현과 데이터 모델링 베스트 프랙티스를 학습합니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🗄️ SwiftData · Core Data · SQLite'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/local-database/cover.png',
@@ -126,6 +134,7 @@ const SESSIONS = [
     textColor: '#fff',
     description: 'Create ML로 나만의 머신러닝 모델을 학습시킵니다. 4개월 동안 12개의 템플릿을 직접 구현합니다.',
     note: '12 templates · 4 months',
+    ticker: ['📅 시작일 미정', '⏱ 4개월', '🧠 12 Templates · Create ML · CoreML'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/createml/cover.png',
@@ -139,6 +148,7 @@ const SESSIONS = [
     textColor: '#000',
     description: 'Metal 성능 최적화, 모델 변환 및 양자화, Foundation Model까지 AI/ML 심화 과정을 탐구합니다.',
     note: 'Metal · Quantization · Foundation Model',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '⚙️ Metal · Quantization · Foundation Model'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/aiml/cover.png',
@@ -151,6 +161,7 @@ const SESSIONS = [
     color: '#1565C0',
     textColor: '#fff',
     description: 'URLSession, 비동기 네트워킹, REST API, WebSocket, 네트워크 진단까지 실전 네트워크 프로그래밍을 익힙니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🌐 URLSession · REST · WebSocket'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/networking/cover.png',
@@ -163,6 +174,7 @@ const SESSIONS = [
     color: '#E91E8C',
     textColor: '#fff',
     description: 'SwiftUI 애니메이션 시스템을 활용해 부드러운 전환 효과와 인터랙티브 모션 디자인을 구현합니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '✨ Animation · Transition · Motion'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/animation-swiftui/cover.png',
@@ -175,6 +187,7 @@ const SESSIONS = [
     color: '#76FF03',
     textColor: '#000',
     description: '문제 분해, 알고리즘 설계, 논리적 사고를 통해 더 나은 소프트웨어를 만드는 컴퓨팅 사고력을 키웁니다.',
+    ticker: ['📅 시작일 미정', '⏱ 기간 미정', '🧩 Algorithm · Logic · Problem Solving'],
     url: '#',
     status: 'active',
     // image: 'assets/images/sessions/computational-thinking/cover.png',
