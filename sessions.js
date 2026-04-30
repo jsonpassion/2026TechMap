@@ -77,7 +77,7 @@ const SESSIONS = [
     title: 'Package Lab',
     mentor: 'Jaesung',
     emoji: '📦',
-    color: '#A0A0A0',
+    color: '#FF5722',
     textColor: '#fff',
     description: 'Swift Package Manager를 활용한 패키지 생성, 배포, 관리 전략을 배웁니다.',
     note: '오픈 준비중',
