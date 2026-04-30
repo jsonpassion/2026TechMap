@@ -127,7 +127,7 @@
       animation: ticker 7s linear infinite;
     }
     .tooltip-ticker-inner {
-      white-space: nowrap; font-size: 11px; font-weight: 700;
+      white-space: nowrap; font-size: 12px; font-weight: 700;
       letter-spacing: 0.5px; padding-right: 40px;
     }
     @keyframes ticker {
@@ -246,6 +246,12 @@
         border-top: 1px solid #eee; margin-top: 8px; padding-top: 6px;
         letter-spacing: 0.3px;
       }
+      /* mobile ticker: padding에 맞춰 마진 재조정 */
+      .tooltip-ticker {
+        margin-left: -12px; margin-right: -12px; margin-bottom: -10px;
+        padding: 4px 0;
+      }
+      .tooltip-ticker-inner { font-size: 11px; }
     }
     @media (max-width: 400px) {
       .header-title { font-size: 14px; }
@@ -566,6 +572,9 @@
         if (s.ticker && s.ticker.length) {
           const text = s.ticker.join('  ·  ') + '  ·  ';
           tickerInners.forEach(t => t.textContent = text);
+          /* 텍스트 길이에 비례해 속도 고정 (약 8자/초) */
+          const track = tooltip.querySelector('.tooltip-ticker-track');
+          if (track) track.style.animationDuration = `${Math.max(5, text.length * 0.13)}s`;
           tickerEl.style.display = 'block';
         } else {
           tickerEl.style.display = 'none';
@@ -764,8 +773,12 @@
         if (activePiece && activePiece !== g) activePiece.classList.remove('touch-active');
 
         if (activePiece === g) {
-          if (s && s.url && s.url !== '#' && s.status !== 'future')
-            window.open(s.url, '_blank', 'noopener,noreferrer');
+          if (s && s.url && s.url !== '#' && s.status !== 'future') {
+            /* iOS Safari popup 차단 우회: anchor 직접 클릭 */
+            const a = document.createElement('a');
+            a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          }
           activePiece = null; g.classList.remove('touch-active');
           hideTooltip(); clearTimeout(tipTimeout); return;
         }
