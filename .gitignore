@@ -31,6 +31,10 @@ dist/
 
 # Claude / Anthropic
 .claude/
+.claude_cache/
 CLAUDE.md
+CLAUDE.local.md
 .claudeignore
 memory/
+*.claude
+.anthropic/
