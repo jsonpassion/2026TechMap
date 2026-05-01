@@ -109,7 +109,7 @@ const SESSIONS = [
     textColor: '#fff',
     description: 'AI와 함께 간단한 앱을 만들고 앱스토어까지 올려보는 모임.',
     note: '선착순 7명 · Hi-fi까지 3주 후 자율 운영',
-    ticker: ['📅 C3 이후 (별도 공지)', '⏱ Hi-fi까지 3주', '🤖 AI 엔지니어링 · 1인 앱개발'],
+    ticker: ['📅 C1 2주차 시작', '⏱ Hi-fi까지 3주', '🤖 AI 엔지니어링 · 1인 앱개발'],
     url: 'https://da-pos.atlassian.net/wiki/spaces/PA26/pages/1137377499',
     status: 'active',
     // image: 'assets/images/sessions/ai-app/cover.png',
