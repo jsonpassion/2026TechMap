@@ -722,6 +722,7 @@
     function setupEvents(svg) {
       let activePiece  = null;
       let hoveredPiece = null;
+      let navPending   = false; // 두 번째 탭 → click 이벤트로 넘길 플래그
 
       svg.addEventListener('mousemove', e => {
         if (isMobile()) return;
@@ -746,7 +747,21 @@
       });
 
       svg.addEventListener('click', e => {
-        if (isMobile()) return; // mobile: navigation handled by second tap in touchstart
+        if (isMobile()) {
+          /* 두 번째 탭으로 발생한 synthetic click → 이 시점은 진짜 user gesture */
+          if (navPending) {
+            navPending = false;
+            const g = e.target.closest('.piece');
+            if (g) {
+              const s = ALL_PIECES.find(x => x.id === g.dataset.id);
+              activePiece = null; g.classList.remove('touch-active');
+              hideTooltip(); clearTimeout(tipTimeout);
+              if (s && s.url && s.url !== '#' && s.status !== 'future')
+                window.open(s.url, '_blank', 'noopener,noreferrer');
+            }
+          }
+          return;
+        }
         const g = e.target.closest('.piece');
         if (!g) return;
         const s = ALL_PIECES.find(x => x.id === g.dataset.id);
@@ -765,24 +780,24 @@
 
       svg.addEventListener('touchstart', e => {
         const g = e.target.closest('.piece');
-        if (!g) { activePiece && activePiece.classList.remove('touch-active'); activePiece = null; hideTooltip(); return; }
+        if (!g) {
+          activePiece && activePiece.classList.remove('touch-active');
+          activePiece = null; navPending = false; hideTooltip(); return;
+        }
+
+        if (activePiece === g) {
+          /* 두 번째 탭: preventDefault 호출 안 함 → iOS가 synthetic click 발생
+             navPending 플래그를 세워두고 click 핸들러에서 실제 이동 처리 */
+          navPending = true;
+          return;
+        }
+
+        /* 첫 번째 탭 */
+        navPending = false;
         e.preventDefault();
         const touch = e.touches[0];
         const s = ALL_PIECES.find(x => x.id === g.dataset.id);
-
         if (activePiece && activePiece !== g) activePiece.classList.remove('touch-active');
-
-        if (activePiece === g) {
-          if (s && s.url && s.url !== '#' && s.status !== 'future') {
-            /* iOS Safari popup 차단 우회: anchor 직접 클릭 */
-            const a = document.createElement('a');
-            a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-          }
-          activePiece = null; g.classList.remove('touch-active');
-          hideTooltip(); clearTimeout(tipTimeout); return;
-        }
-
         activePiece = g; g.classList.add('touch-active'); bringToFront(g);
         if (s) {
           showTooltip(s, touch.clientX, touch.clientY);
